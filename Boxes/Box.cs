@@ -9,9 +9,9 @@
 
         public Box(IBox? p)
         {
-            _Box = new MonoBox();
-            Height = _Box.Height;
-            Width = _Box.Width;
+            _Box = p;
+            Height = p.Height;
+            Width = p.Width;
         }
 
         public Box(string text)
