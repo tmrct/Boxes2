@@ -7,14 +7,16 @@ static void FactoryTest()
     Console.WriteLine(new Box(p));
     p = new BoxFactory().Create("ch\nmono J'aime mon \"prof\"\nmono moi itou");
     Console.WriteLine(new Box(p));
-    //p = new BoxFactory().Create(
-    //    "ch\ncv\nmono J'aime mon \"prof\"\nmono moi itou\nmono eh ben");
-    //Console.WriteLine(new Box(p));
+    p = new BoxFactory().Create(
+        "ch\ncv\nmono J'aime mon \"prof\"\nmono moi itou\nmono eh ben");
+    Console.WriteLine(new Box(p));
+    //Pour le bonus pas besoin
     //p = new BoxFactory().Create(
     //    "ch\ncv\nmc\nmono J'aime mon \"prof\"\nmono moi itou\nmono eh ben");
     //Console.WriteLine(new Box(p));
 }
 FactoryTest();
+
 //Box b = new();
 //Console.WriteLine(b);
 ////Console.WriteLine(new Box("yo"));

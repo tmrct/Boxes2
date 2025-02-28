@@ -41,6 +41,11 @@
             Width = _Box.Width;
         }
 
+        public Box()
+        {
+            _Box = new MonoBox();
+        }
+
         public override string ToString()
         {
             string res = $"+{new string('-', Width)}+\r\n";
