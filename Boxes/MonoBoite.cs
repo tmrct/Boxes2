@@ -20,8 +20,8 @@ namespace Boites
             if (string.IsNullOrEmpty(text))
             {
                 Lignes.Add("");
-                Largeur = Lignes.Max(line => line.Length);
-                Hauteur = Lignes.Count;
+                Largeur = 0;
+                Hauteur = 0;
             }
             else
             {

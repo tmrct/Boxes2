@@ -17,7 +17,7 @@ namespace Boites
         public ComboVertical(IBoite boiteHaut, IBoite boiteBas)
         {
             Largeur = Math.Max(boiteHaut.Largeur, boiteBas.Largeur);
-            Hauteur = boiteHaut.Hauteur + boiteBas.Hauteur + 1; // +1 pour ligne separateur
+            Hauteur = boiteHaut.Hauteur + boiteBas.Hauteur + 1;
 
             BoiteHaut = boiteHaut.Clone();
             BoiteBas = boiteBas.Clone();

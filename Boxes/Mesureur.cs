@@ -11,25 +11,16 @@ namespace Boites
         public IBoite? BoiteLaPlusPetite { get; private set; }
         public IBoite? BoiteLaPlusGrande { get; private set; }
 
-        public string PlusPetite => BoiteLaPlusPetite != null ? new Boite(BoiteLaPlusPetite).ToString() : "No box found";
-        public string PlusGrande => BoiteLaPlusGrande != null ? new Boite(BoiteLaPlusGrande).ToString() : "No box found";
+        public string PlusPetite => BoiteLaPlusPetite != null ? new Boite(BoiteLaPlusPetite).ToString() : "Pas de boite trouvée";
+        public string PlusGrande => BoiteLaPlusGrande != null ? new Boite(BoiteLaPlusGrande).ToString() : "Pas de boite trouvée";
 
-        public void Entrer()
-        {
-            // Nothing to do when entering
-        }
+        public void Entrer() { }
 
-        public void Sortir()
-        {
-            // Nothing to do when exiting
-        }
+        public void Sortir() { }
 
         public void Visiter(IBoite elem, Action? opt = null)
         {
             int surface = elem.Largeur * elem.Hauteur;
-
-            if (surface == 0)
-                return;
 
             if (BoiteLaPlusPetite == null || (surface < BoiteLaPlusPetite.Largeur * BoiteLaPlusPetite.Hauteur))
             {
@@ -40,8 +31,6 @@ namespace Boites
             {
                 BoiteLaPlusGrande = elem.Clone();
             }
-
-            //opt?.Invoke();
         }
     }
 }
