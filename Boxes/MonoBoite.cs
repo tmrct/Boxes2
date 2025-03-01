@@ -2,32 +2,32 @@
 
 namespace Boxes
 {
-    internal class MonoBox : IBox
+    internal class MonoBoite : IBoite
     {
-        public int Height { get; set; }
-        public int Width { get; set; }
+        public int Hauteur { get; set; }
+        public int Largeur { get; set; }
         public List<string> Lines { get; } = [];
 
-        protected MonoBox(MonoBox mb)
+        protected MonoBoite(MonoBoite mb)
         {
-            Height = mb.Height;
-            Width = mb.Width;
+            Hauteur = mb.Hauteur;
+            Largeur = mb.Largeur;
             Lines = new(mb.Lines);
         }
 
-        public MonoBox(string text = "")
+        public MonoBoite(string text = "")
         {
             if (string.IsNullOrEmpty(text))
             {
                 Lines.Add("");
-                Width = Lines.Max(line => line.Length);
-                Height = Lines.Count;
+                Largeur = Lines.Max(line => line.Length);
+                Hauteur = Lines.Count;
             }
             else
             {
                 Lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-                Width = Lines.Max(line => line.Length);
-                Height = Lines.Count;
+                Largeur = Lines.Max(line => line.Length);
+                Hauteur = Lines.Count;
             }
         }
 
@@ -35,14 +35,19 @@ namespace Boxes
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IBox Clone() => new MonoBox(this);
+        public IBoite Clone() => new MonoBoite(this);
 
-        public void Resize(int width, int height)
+        public void Redimensionner(int width, int height)
         {
-            Width = width; 
-            Height = height;
+            Largeur = width; 
+            Hauteur = height;
         }
-
+        public void Accepter(IVisiteur<IBoite> visitor)
+        {
+            visitor.Entrer();
+            visitor.Visiter(this, () => Console.WriteLine($"Mono {Hauteur} x {Largeur}"));
+            visitor.Sortir();
+        }
         private class MonoBoxEnum : IEnumerator<string>
         {
             private readonly List<string> Source;

@@ -7,37 +7,55 @@ namespace Boxes
 {
     enum Position { Top, Middle, Bottom, End }
 
-    internal class ComboVertical : IBox
+    internal class ComboVertical : IBoite
     {
-        public int Height { get; set; }
-        public int Width { get; set; }
-        private IBox TopBox { get; set; }
-        private IBox BottomBox { get; set; }
+        public int Hauteur { get; set; }
+        public int Largeur { get; set; }
+        private IBoite TopBoite { get; set; }
+        private IBoite BottomBoite { get; set; }
 
-        public ComboVertical(IBox top, IBox bottom)
+        public ComboVertical(IBoite top, IBoite bottom)
         {
-            Width = Math.Max(top.Width, bottom.Width);
-            Height = top.Height + bottom.Height + 1; // +1 pour ligne separateur
+            Largeur = Math.Max(top.Largeur, bottom.Largeur);
+            Hauteur = top.Hauteur + bottom.Hauteur + 1; // +1 pour ligne separateur
 
-            TopBox = top.Clone();
-            BottomBox = bottom.Clone();
+            TopBoite = top.Clone();
+            BottomBoite = bottom.Clone();
 
-            TopBox.Resize(Width, TopBox.Height);
-            BottomBox.Resize(Width, BottomBox.Height);
+            TopBoite.Redimensionner(Largeur, TopBoite.Hauteur);
+            BottomBoite.Redimensionner(Largeur, BottomBoite.Hauteur);
         }
 
         public IEnumerator<string> GetEnumerator() => new ComboVerticalEnumerator(this);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IBox Clone() => new ComboVertical(TopBox, BottomBox);
+        public IBoite Clone() => new ComboVertical(TopBoite, BottomBoite);
 
-        public void Resize(int width, int height)
+        public void Redimensionner(int width, int height)
         {
-            Width = width;
-            Height = height;
-            TopBox.Resize(Width, TopBox.Height);
-            BottomBox.Resize(Width, Height - TopBox.Height - 1);
+            Largeur = width;
+            Hauteur = height;
+            TopBoite.Redimensionner(Largeur, TopBoite.Hauteur);
+            BottomBoite.Redimensionner(Largeur, Hauteur - TopBoite.Hauteur - 1);
+        }
+        public void Accepter(IVisiteur<IBoite> visitor)
+        {
+            visitor.Entrer();
+            visitor.Visiter(this, () => Console.WriteLine("ComboVertical"));
+
+            // Visit the top and bottom boxes
+            if (TopBoite is IVisitable<IBoite> top)
+            {
+                top.Accepter(visitor);
+            }
+
+            if (BottomBoite is IVisitable<IBoite> bottom)
+            {
+                bottom.Accepter(visitor);
+            }
+
+            visitor.Sortir();
         }
 
         private class ComboVerticalEnumerator : IEnumerator<string>
@@ -49,8 +67,8 @@ namespace Boxes
 
             public ComboVerticalEnumerator(ComboVertical cv)
             {
-                EnumTop = cv.TopBox.GetEnumerator();
-                EnumBottom = cv.BottomBox.GetEnumerator();
+                EnumTop = cv.TopBoite.GetEnumerator();
+                EnumBottom = cv.BottomBoite.GetEnumerator();
                 Cv = cv;
                 _Position = Position.Top;
             }
@@ -62,13 +80,13 @@ namespace Boxes
                     switch (_Position)
                     {
                         case Position.Top:
-                            return EnumTop.Current.PadRight(Cv.Width, ' ');
+                            return EnumTop.Current.PadRight(Cv.Largeur, ' ');
                         case Position.Middle:
-                            return new string('-', Cv.Width);
+                            return new string('-', Cv.Largeur);
                         case Position.Bottom:
-                            return EnumBottom.Current.PadRight(Cv.Width, ' ');
+                            return EnumBottom.Current.PadRight(Cv.Largeur, ' ');
                         case Position.End:
-                            return new string(' ', Cv.Width);
+                            return new string(' ', Cv.Largeur);
                         default: return "";
                     }
                 } 
