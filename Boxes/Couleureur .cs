@@ -8,16 +8,16 @@ namespace Boxes
 {
     public class Couleureur : IVisiteur<IBoite>
     {
-        private int _indentLevel = 0;
+        private int _indentLevel = -1;
         private readonly ConsoleColor[] _colors = new[]
         {
+            ConsoleColor.White,
             ConsoleColor.Red,
             ConsoleColor.Green,
             ConsoleColor.Yellow,
             ConsoleColor.Blue,
             ConsoleColor.Magenta,
             ConsoleColor.Cyan,
-            ConsoleColor.White
         };
 
         public void Entrer()

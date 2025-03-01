@@ -41,7 +41,7 @@ namespace Boxes
                 Largest = elem.Clone();
             }
 
-            opt?.Invoke();
+            //opt?.Invoke();
         }
     }
 }
