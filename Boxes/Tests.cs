@@ -19,6 +19,9 @@ namespace Boites
             p = new FabriqueBoites().Créer(
                 "ch\ncv\nmono J'aime mon \"prof\"\nmono moi itou\nmono eh ben");
             Console.WriteLine(new Boite(p));
+            //p = new FabriqueBoites().Créer(
+            //    "ch\ncv\nmc\nmono J'aime mon \"prof\"\nmono moi itou\nmono eh ben");
+            //Console.WriteLine(new Boite(p));
         }
 
         public static void TesterVisiteurs()
@@ -86,6 +89,35 @@ multiligne";
                new Boite(new ComboVertical(new Boite(), new Boite())),
                coul, mes
             );
+            //Tester(new Boite(new MonoCombo(new Boite("allo"))), coul, mes);
+            //Tester(new Boite(
+            //   new MonoCombo(new Boite(new MonoCombo(new Boite("allo"))))
+            //), coul, mes);
+            //Tester(new Boite(
+            //   new ComboVertical(
+            //      new Boite(new MonoCombo(new Boite(new MonoCombo(new Boite("allo"))))),
+            //      new Boite("Eh ben")
+            //   )
+            //), coul, mes);
+            //Tester(new Boite(
+            //   new ComboHorizontal(new Boite("a\nb\nc\nd"),
+            //                       new Boite(new MonoCombo(new Boite())))
+            //), coul, mes);
+            //Tester(new Boite(
+            //   new ComboHorizontal(new Boite(),
+            //                       new Boite(new MonoCombo(new Boite())))
+            //), coul, mes);
+            //Tester(new Boite(
+            //   new ComboHorizontal(
+            //      new Boite(new MonoCombo(new Boite(new MonoCombo(new Boite("allo"))))),
+            //      new Boite(new ComboVertical(
+            //         new Boite("Eh ben"),
+            //         new Boite(new MonoCombo(new Boite(
+            //            new ComboHorizontal(new Boite("yo"), new Boite("hey"))
+            //         )))
+            //      ))
+            //   )
+            //), coul, mes);
             Console.WriteLine($"\n\nLa plus petite boite est :\n{mes.PlusPetite}");
             Console.WriteLine($"\n\nLa plus grande boite est :\n{mes.PlusGrande}");
         }
