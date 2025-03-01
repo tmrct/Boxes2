@@ -5,75 +5,98 @@ using System.Linq;
 
 namespace Boxes
 {
-    enum Position
-    {
-        Left, Middle, Right, Top, Bottom, End
-    }
+    enum Position { Top, Middle, Bottom, End }
 
     internal class ComboVertical : IBox
     {
         public int Height { get; set; }
         public int Width { get; set; }
-        private readonly List<(string, Position)> Lines = new();
+        private IBox TopBox { get; set; }
+        private IBox BottomBox { get; set; }
 
-        public ComboVertical(Box top, Box bottom)
+        public ComboVertical(IBox top, IBox bottom)
         {
             Width = Math.Max(top.Width, bottom.Width);
-            Height = top.Height + bottom.Height + 1;
+            Height = top.Height + bottom.Height + 1; // +1 pour ligne separateur
 
-            IEnumerator<string> topEnum = top._Box!.GetEnumerator();
-            IEnumerator<string> bottomEnum = bottom._Box!.GetEnumerator();
+            TopBox = top.Clone();
+            BottomBox = bottom.Clone();
 
-            // Iterate over top box (Top Position)
-            while (topEnum.MoveNext())
-            {
-                Lines.Add((topEnum.Current.PadRight(Width), Position.Top));
-            }
-
-            // Add separator line (Middle Position)
-            Lines.Add((new string('-', Width), Position.Middle));
-
-            // Iterate over bottom box (Bottom Position)
-            while (bottomEnum.MoveNext())
-            {
-                Lines.Add((bottomEnum.Current.PadRight(Width), Position.Bottom));
-            }
-
-            // Mark the end (End Position)
-            Lines.Add((new string(' ', Width), Position.End)); // Could be another visual separator
+            TopBox.Resize(Width, TopBox.Height);
+            BottomBox.Resize(Width, BottomBox.Height);
         }
 
-        public IEnumerator<string> GetEnumerator() => new ComboVerticalEnumerator(Lines);
+        public IEnumerator<string> GetEnumerator() => new ComboVerticalEnumerator(this);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        public IBox Clone() => new ComboVertical(TopBox, BottomBox);
+
+        public void Resize(int width, int height)
+        {
+            Width = width;
+            Height = height;
+            TopBox.Resize(Width, TopBox.Height);
+            BottomBox.Resize(Width, Height - TopBox.Height - 1);
+        }
+
         private class ComboVerticalEnumerator : IEnumerator<string>
         {
-            private readonly List<(string, Position)> Source;
-            private int Index = -1;
+            private IEnumerator<string> EnumTop { get; set; }
+            private IEnumerator<string> EnumBottom { get; set; }
+            private Position _Position { get; set; }
+            private ComboVertical Cv { get; set; }
 
-            public ComboVerticalEnumerator(List<(string, Position)> src)
+            public ComboVerticalEnumerator(ComboVertical cv)
             {
-                Source = src;
+                EnumTop = cv.TopBox.GetEnumerator();
+                EnumBottom = cv.BottomBox.GetEnumerator();
+                Cv = cv;
+                _Position = Position.Top;
             }
 
-            public string Current => Source[Index].Item1;
+            public string Current 
+            { 
+                get 
+                {
+                    switch (_Position)
+                    {
+                        case Position.Top:
+                            return EnumTop.Current.PadRight(Cv.Width, ' ');
+                        case Position.Middle:
+                            return new string('-', Cv.Width);
+                        case Position.Bottom:
+                            return EnumBottom.Current.PadRight(Cv.Width, ' ');
+                        case Position.End:
+                            return new string(' ', Cv.Width);
+                        default: return "";
+                    }
+                } 
+            }
 
             object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
-                if (Index >= Source.Count - 1)
-                    return false;
-
-                Index++;
-                return true;
+                switch (_Position)
+                {
+                    case Position.Top:
+                        if(!EnumTop.MoveNext())
+                            _Position = Position.Middle;
+                        return true;
+                    case Position.Middle:
+                        _Position = Position.Bottom;
+                        EnumBottom.MoveNext();
+                        return true;
+                    case Position.Bottom:
+                        return EnumBottom.MoveNext();
+                    case Position.End:
+                        return false;
+                    default: return false;
+                }
             }
 
-            public void Reset()
-            {
-                Index = -1;
-            }
+            public void Reset() { }
 
             public void Dispose() { }
         }

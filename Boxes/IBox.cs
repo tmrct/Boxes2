@@ -10,5 +10,7 @@ namespace Boxes
     {
         int Height { get; set; }
         int Width { get; set; }
+        IBox Clone();
+        void Resize(int width, int height);
     }
 }

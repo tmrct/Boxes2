@@ -8,64 +8,83 @@ namespace Boxes
     internal class ComboHorizontal : IBox
     {
         public int Height { get; set; }
-        public int Width { get; set;}
-        private readonly List<(string, Position)> Lines = [];
+        public int Width { get; set; }
+        private IBox LeftBox { get; set; }
+        private IBox RightBox { get; set; }
 
-        public ComboHorizontal(Box left, Box right)
+        public ComboHorizontal(IBox left, IBox right)
         {
             Width = left.Width + right.Width + 1;
             Height = Math.Max(left.Height, right.Height);
 
-            var leftClone = new Box(left);
-            var rightClone = new Box(right);
+            LeftBox = left.Clone();
+            RightBox = right.Clone();
 
-            leftClone.Height = Height;
-            rightClone.Height = Height;
-            leftClone.Width = Width;
-            rightClone.Width = Width;
-
-            IEnumerator<string> leftEnum = leftClone._Box!.GetEnumerator();
-            IEnumerator<string> rightEnum = rightClone._Box!.GetEnumerator();
-
-            for (int i = 0; i < Height; i++)
-            {
-                string leftPart = leftEnum.MoveNext() ? leftEnum.Current.PadRight(left.Width) : new string(' ', left.Width);
-                string rightPart = rightEnum.MoveNext() ? rightEnum.Current.PadRight(right.Width) : new string(' ', right.Width);
-
-                Lines.Add(($"{leftPart}|{rightPart}", Position.Middle));
-            }
+            LeftBox.Resize(LeftBox.Width, Height);
+            RightBox.Resize(RightBox.Width, Height);
         }
 
-        public IEnumerator<string> GetEnumerator() => new ComboHorizontalEnumerator(Lines);
+        public IEnumerator<string> GetEnumerator() => new ComboHorizontalEnumerator(this);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        public IBox Clone() => new ComboHorizontal(LeftBox, RightBox);
+
+        public void Resize(int width, int height)
+        {
+            Width = width;
+            Height = height;
+            LeftBox.Resize(LeftBox.Width, Height);
+            RightBox.Resize(Width - LeftBox.Width - 1, Height);
+        }
+
         private class ComboHorizontalEnumerator : IEnumerator<string>
         {
-            private readonly List<(string, Position)> Source;
-            private int Index = -1;
+            private IEnumerator<string> LeftBoxEnum;
+            private IEnumerator<string> RightBoxEnum;
+            private ComboHorizontal Ch { get; set; }
 
-            public ComboHorizontalEnumerator(List<(string, Position)> src)
+            public ComboHorizontalEnumerator(ComboHorizontal ch)
             {
-                Source = src;
+                LeftBoxEnum = ch.LeftBox.GetEnumerator();
+                RightBoxEnum = ch.RightBox.GetEnumerator();
+                Ch = ch;
             }
 
-            public string Current => Source[Index].Item1;
+            public string Current
+            {
+                get
+                {
+                    string left = LeftBoxEnum.Current ?? new string(' ', Ch.LeftBox.Width);
+                    string right = RightBoxEnum.Current ?? new string(' ', Ch.RightBox.Width);
+                    left = left.PadRight(Ch.LeftBox.Width);
+                    if (gaucheFini)
+                        left = new string(' ', Ch.LeftBox.Width);
+                    if (droiteFini)
+                        right = new string(' ', Ch.RightBox.Width);
+                    return left + "|" + right;
+                }
+            }
+
 
             object IEnumerator.Current => Current;
-
+            private bool gaucheFini = false;
+            private bool droiteFini = false;
+            private int counter = 0;
             public bool MoveNext()
             {
-                if (Index >= Source.Count - 1)
-                    return false;
+                gaucheFini = !LeftBoxEnum.MoveNext();
+                droiteFini = !RightBoxEnum.MoveNext();
 
-                Index++;
-                return true;
+                counter++;
+
+                return counter <= Ch.Height;
             }
 
             public void Reset()
             {
-                Index = -1;
+                LeftBoxEnum.Reset();
+                RightBoxEnum.Reset();
             }
 
             public void Dispose() { }

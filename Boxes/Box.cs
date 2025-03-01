@@ -1,17 +1,19 @@
-﻿namespace Boxes
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Boxes
 {
-    class Box
+    class Box : IBox
     {
         public int Height { get; set; }
         public int Width { get; set; }
 
         public IBox? _Box;
-
-        public Box(IBox? p)
+        public Box()
         {
-            _Box = p;
-            Height = p.Height;
-            Width = p.Width;
+            _Box = new MonoBox();
+            Height = _Box.Height;
+            Width = _Box.Width;
         }
 
         public Box(string text)
@@ -20,30 +22,20 @@
             Height = _Box.Height;
             Width = _Box.Width;
         }
+
         public Box(Box box)
         {
-            _Box = box._Box;
-            Height = box._Box.Height;
-            Width = box._Box.Width;
+            _Box = box._Box.Clone();
+            Height = box.Height;
+            Width = box.Width;
         }
 
-        public Box(ComboHorizontal ch)
+
+        public Box(IBox box)
         {
-            _Box = ch;
+            _Box = box.Clone();
             Height = _Box.Height;
             Width = _Box.Width;
-        }
-
-        public Box(ComboVertical cv)
-        {
-            _Box = cv;
-            Height = _Box.Height;
-            Width = _Box.Width;
-        }
-
-        public Box()
-        {
-            _Box = new MonoBox();
         }
 
         public override string ToString()
@@ -52,13 +44,25 @@
 
             foreach (string s in _Box)
             {
-                if(s != "")
+                if (s != "") 
                     res += $"|{s.PadRight(Width)}|\n";
             }
 
             res += $"+{new string('-', Width)}+";
 
             return res;
+        }
+        public IBox Clone() => new Box(this);
+
+        public IEnumerator<string> GetEnumerator() => _Box.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => _Box.GetEnumerator();
+
+        public void Resize(int width, int height)
+        {
+            Width = width;
+            Height = height;
+            _Box.Resize(width, height);
         }
     }
 }

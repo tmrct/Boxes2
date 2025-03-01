@@ -8,6 +8,13 @@ namespace Boxes
         public int Width { get; set; }
         public List<string> Lines { get; } = [];
 
+        protected MonoBox(MonoBox mb)
+        {
+            Height = mb.Height;
+            Width = mb.Width;
+            Lines = new(mb.Lines);
+        }
+
         public MonoBox(string text = "")
         {
             if (string.IsNullOrEmpty(text))
@@ -24,18 +31,24 @@ namespace Boxes
             }
         }
 
-        public IEnumerator<string> GetEnumerator() => new Enum(Lines);
+        public IEnumerator<string> GetEnumerator() => new MonoBoxEnum(Lines);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        
 
-        // Custom Enumerator Class
-        private class Enum : IEnumerator<string>
+        public IBox Clone() => new MonoBox(this);
+
+        public void Resize(int width, int height)
+        {
+            Width = width; 
+            Height = height;
+        }
+
+        private class MonoBoxEnum : IEnumerator<string>
         {
             private readonly List<string> Source;
             private int Index = -1;
 
-            public Enum(List<string> src)
+            public MonoBoxEnum(List<string> src)
             {
                 Source = src;
             }
