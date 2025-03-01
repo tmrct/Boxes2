@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Boxes
+namespace Boites
 {
     public class Couleureur : IVisiteur<IBoite>
     {
-        private int _indentLevel = -1;
-        private readonly ConsoleColor[] _colors = new[]
+        private int indentation = -1;
+        private readonly ConsoleColor[] _couleurs = new[]
         {
             ConsoleColor.White,
             ConsoleColor.Red,
@@ -22,21 +22,21 @@ namespace Boxes
 
         public void Entrer()
         {
-            _indentLevel++;
+            indentation++;
         }
 
         public void Sortir()
         {
-            _indentLevel--;
+            indentation--;
         }
 
         public void Visiter(IBoite elem, Action? opt = null)
         {
             ConsoleColor originalColor = Console.ForegroundColor;
 
-            Console.ForegroundColor = _colors[_indentLevel % _colors.Length];
+            Console.ForegroundColor = _couleurs[indentation % _couleurs.Length];
 
-            Console.Write(new string(' ', _indentLevel * 2));
+            Console.Write(new string(' ', indentation * 2));
 
             opt?.Invoke();
 

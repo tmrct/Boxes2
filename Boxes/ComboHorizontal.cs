@@ -3,69 +3,69 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Boxes
+namespace Boites
 {
     internal class ComboHorizontal : IBoite
     {
         public int Hauteur { get; set; }
         public int Largeur { get; set; }
-        private IBoite LeftBoite { get; set; }
-        private IBoite RightBoite { get; set; }
+        private IBoite BoiteGauche { get; set; }
+        private IBoite BoiteDroite { get; set; }
 
-        public ComboHorizontal(IBoite left, IBoite right)
+        public ComboHorizontal(IBoite gauche, IBoite droite)
         {
-            Largeur = left.Largeur + right.Largeur + 1;
-            Hauteur = Math.Max(left.Hauteur, right.Hauteur);
+            Largeur = gauche.Largeur + droite.Largeur + 1;
+            Hauteur = Math.Max(gauche.Hauteur, droite.Hauteur);
 
-            LeftBoite = left.Clone();
-            RightBoite = right.Clone();
+            BoiteGauche = gauche.Clone();
+            BoiteDroite = droite.Clone();
 
-            LeftBoite.Redimensionner(LeftBoite.Largeur, Hauteur);
-            RightBoite.Redimensionner(RightBoite.Largeur, Hauteur);
+            BoiteGauche.Redimensionner(BoiteGauche.Largeur, Hauteur);
+            BoiteDroite.Redimensionner(BoiteDroite.Largeur, Hauteur);
         }
 
         public IEnumerator<string> GetEnumerator() => new ComboHorizontalEnumerator(this);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IBoite Clone() => new ComboHorizontal(LeftBoite, RightBoite);
+        public IBoite Clone() => new ComboHorizontal(BoiteGauche, BoiteDroite);
 
-        public void Redimensionner(int width, int height)
+        public void Redimensionner(int largeur, int hauteur)
         {
-            Largeur = width;
-            Hauteur = height;
-            LeftBoite.Redimensionner(LeftBoite.Largeur, Hauteur);
-            RightBoite.Redimensionner(Largeur - LeftBoite.Largeur - 1, Hauteur);
+            Largeur = largeur;
+            Hauteur = hauteur;
+            BoiteGauche.Redimensionner(BoiteGauche.Largeur, Hauteur);
+            BoiteDroite.Redimensionner(Largeur - BoiteGauche.Largeur - 1, Hauteur);
         }
-        public void Accepter(IVisiteur<IBoite> visitor)
+        public void Accepter(IVisiteur<IBoite> visiteur)
         {
-            visitor.Entrer();
-            visitor.Visiter(this, () => Console.WriteLine("ComboHorizontal"));
+            visiteur.Entrer();
+            visiteur.Visiter(this, () => Console.WriteLine("ComboHorizontal"));
 
-            // Visit the left and right boxes
-            if (LeftBoite is IVisitable<IBoite> left)
+            // Visit the gauche and droite boxes
+            if (BoiteGauche is IVisitable<IBoite> gauche)
             {
-                left.Accepter(visitor);
+                gauche.Accepter(visiteur);
             }
 
-            if (RightBoite is IVisitable<IBoite> right)
+            if (BoiteDroite is IVisitable<IBoite> droite)
             {
-                right.Accepter(visitor);
+                droite.Accepter(visiteur);
             }
 
-            visitor.Sortir();
+            visiteur.Sortir();
         }
 
         private class ComboHorizontalEnumerator : IEnumerator<string>
         {
-            private IEnumerator<string> LeftBoxEnum;
-            private IEnumerator<string> RightBoxEnum;
+            private IEnumerator<string> GaucheBoxEnum;
+            private IEnumerator<string> DroiteBoxEnum;
             private ComboHorizontal Ch { get; set; }
 
             public ComboHorizontalEnumerator(ComboHorizontal ch)
             {
-                LeftBoxEnum = ch.LeftBoite.GetEnumerator();
-                RightBoxEnum = ch.RightBoite.GetEnumerator();
+                GaucheBoxEnum = ch.BoiteGauche.GetEnumerator();
+                DroiteBoxEnum = ch.BoiteDroite.GetEnumerator();
                 Ch = ch;
             }
 
@@ -73,14 +73,14 @@ namespace Boxes
             {
                 get
                 {
-                    string left = LeftBoxEnum.Current ?? new string(' ', Ch.LeftBoite.Largeur);
-                    string right = RightBoxEnum.Current ?? new string(' ', Ch.RightBoite.Largeur);
-                    left = left.PadRight(Ch.LeftBoite.Largeur);
+                    string gauche = GaucheBoxEnum.Current ?? new string(' ', Ch.BoiteGauche.Largeur);
+                    string droite = DroiteBoxEnum.Current ?? new string(' ', Ch.BoiteDroite.Largeur);
+                    gauche = gauche.PadRight(Ch.BoiteGauche.Largeur);
                     if (gaucheFini)
-                        left = new string(' ', Ch.LeftBoite.Largeur);
+                        gauche = new string(' ', Ch.BoiteGauche.Largeur);
                     if (droiteFini)
-                        right = new string(' ', Ch.RightBoite.Largeur);
-                    return left + "|" + right;
+                        droite = new string(' ', Ch.BoiteDroite.Largeur);
+                    return gauche + "|" + droite;
                 }
             }
 
@@ -88,21 +88,21 @@ namespace Boxes
             object IEnumerator.Current => Current;
             private bool gaucheFini = false;
             private bool droiteFini = false;
-            private int counter = 0;
+            private int compteur = 0;
             public bool MoveNext()
             {
-                gaucheFini = !LeftBoxEnum.MoveNext();
-                droiteFini = !RightBoxEnum.MoveNext();
+                gaucheFini = !GaucheBoxEnum.MoveNext();
+                droiteFini = !DroiteBoxEnum.MoveNext();
 
-                counter++;
+                compteur++;
 
-                return counter <= Ch.Hauteur;
+                return compteur <= Ch.Hauteur;
             }
 
             public void Reset()
             {
-                LeftBoxEnum.Reset();
-                RightBoxEnum.Reset();
+                GaucheBoxEnum.Reset();
+                DroiteBoxEnum.Reset();
             }
 
             public void Dispose() { }

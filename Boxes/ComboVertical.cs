@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Boxes
+namespace Boites
 {
     enum Position { Top, Middle, Bottom, End }
 
@@ -11,51 +11,51 @@ namespace Boxes
     {
         public int Hauteur { get; set; }
         public int Largeur { get; set; }
-        private IBoite TopBoite { get; set; }
-        private IBoite BottomBoite { get; set; }
+        private IBoite BoiteHaut { get; set; }
+        private IBoite BoiteBas { get; set; }
 
-        public ComboVertical(IBoite top, IBoite bottom)
+        public ComboVertical(IBoite boiteHaut, IBoite boiteBas)
         {
-            Largeur = Math.Max(top.Largeur, bottom.Largeur);
-            Hauteur = top.Hauteur + bottom.Hauteur + 1; // +1 pour ligne separateur
+            Largeur = Math.Max(boiteHaut.Largeur, boiteBas.Largeur);
+            Hauteur = boiteHaut.Hauteur + boiteBas.Hauteur + 1; // +1 pour ligne separateur
 
-            TopBoite = top.Clone();
-            BottomBoite = bottom.Clone();
+            BoiteHaut = boiteHaut.Clone();
+            BoiteBas = boiteBas.Clone();
 
-            TopBoite.Redimensionner(Largeur, TopBoite.Hauteur);
-            BottomBoite.Redimensionner(Largeur, BottomBoite.Hauteur);
+            BoiteHaut.Redimensionner(Largeur, BoiteHaut.Hauteur);
+            BoiteBas.Redimensionner(Largeur, BoiteBas.Hauteur);
         }
 
         public IEnumerator<string> GetEnumerator() => new ComboVerticalEnumerator(this);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IBoite Clone() => new ComboVertical(TopBoite, BottomBoite);
+        public IBoite Clone() => new ComboVertical(BoiteHaut, BoiteBas);
 
-        public void Redimensionner(int width, int height)
+        public void Redimensionner(int largeur, int hauteur)
         {
-            Largeur = width;
-            Hauteur = height;
-            TopBoite.Redimensionner(Largeur, TopBoite.Hauteur);
-            BottomBoite.Redimensionner(Largeur, Hauteur - TopBoite.Hauteur - 1);
+            Largeur = largeur;
+            Hauteur = hauteur;
+            BoiteHaut.Redimensionner(Largeur, BoiteHaut.Hauteur);
+            BoiteBas.Redimensionner(Largeur, Hauteur - BoiteHaut.Hauteur - 1);
         }
-        public void Accepter(IVisiteur<IBoite> visitor)
+        public void Accepter(IVisiteur<IBoite> visiteur)
         {
-            visitor.Entrer();
-            visitor.Visiter(this, () => Console.WriteLine("ComboVertical"));
+            visiteur.Entrer();
+            visiteur.Visiter(this, () => Console.WriteLine("ComboVertical"));
 
             // Visit the top and bottom boxes
-            if (TopBoite is IVisitable<IBoite> top)
+            if (BoiteHaut is IVisitable<IBoite> top)
             {
-                top.Accepter(visitor);
+                top.Accepter(visiteur);
             }
 
-            if (BottomBoite is IVisitable<IBoite> bottom)
+            if (BoiteBas is IVisitable<IBoite> bottom)
             {
-                bottom.Accepter(visitor);
+                bottom.Accepter(visiteur);
             }
 
-            visitor.Sortir();
+            visiteur.Sortir();
         }
 
         private class ComboVerticalEnumerator : IEnumerator<string>
@@ -67,8 +67,8 @@ namespace Boxes
 
             public ComboVerticalEnumerator(ComboVertical cv)
             {
-                EnumTop = cv.TopBoite.GetEnumerator();
-                EnumBottom = cv.BottomBoite.GetEnumerator();
+                EnumTop = cv.BoiteHaut.GetEnumerator();
+                EnumBottom = cv.BoiteBas.GetEnumerator();
                 Cv = cv;
                 _Position = Position.Top;
             }

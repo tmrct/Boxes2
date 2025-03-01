@@ -1,31 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Boxes
+namespace Boites
 {
     class Boite : IBoite
     {
         public int Hauteur { get; set; }
         public int Largeur { get; set; }
 
-        public IBoite? _Box;
+        public IBoite? _Boite;
         public Boite()
         {
-            _Box = new MonoBoite();
-            Hauteur = _Box.Hauteur;
-            Largeur = _Box.Largeur;
+            _Boite = new MonoBoite();
+            Hauteur = _Boite.Hauteur;
+            Largeur = _Boite.Largeur;
         }
 
-        public Boite(string text)
+        public Boite(string texte)
         {
-            _Box = new MonoBoite(text);
-            Hauteur = _Box.Hauteur;
-            Largeur = _Box.Largeur;
+            _Boite = new MonoBoite(texte);
+            Hauteur = _Boite.Hauteur;
+            Largeur = _Boite.Largeur;
         }
 
         public Boite(Boite boite)
         {
-            _Box = boite._Box.Clone();
+            _Boite = boite._Boite.Clone();
             Hauteur = boite.Hauteur;
             Largeur = boite.Largeur;
         }
@@ -33,16 +33,16 @@ namespace Boxes
 
         public Boite(IBoite boite)
         {
-            _Box = boite.Clone();
-            Hauteur = _Box.Hauteur;
-            Largeur = _Box.Largeur;
+            _Boite = boite.Clone();
+            Hauteur = _Boite.Hauteur;
+            Largeur = _Boite.Largeur;
         }
 
         public override string ToString()
         {
             string res = $"+{new string('-', Largeur)}+\r\n";
 
-            foreach (string s in _Box)
+            foreach (string s in _Boite)
             {
                 if (s != "") 
                     res += $"|{s.PadRight(Largeur)}|\n";
@@ -54,27 +54,27 @@ namespace Boxes
         }
         public IBoite Clone() => new Boite(this);
 
-        public IEnumerator<string> GetEnumerator() => _Box.GetEnumerator();
+        public IEnumerator<string> GetEnumerator() => _Boite.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => _Box.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _Boite.GetEnumerator();
 
-        public void Redimensionner(int width, int height)
+        public void Redimensionner(int largeur, int hauteur)
         {
-            Largeur = width;
-            Hauteur = height;
-            _Box.Redimensionner(width, height);
+            Largeur = largeur;
+            Hauteur = hauteur;
+            _Boite.Redimensionner(largeur, hauteur);
         }
-        public void Accepter(IVisiteur<IBoite> visitor)
+        public void Accepter(IVisiteur<IBoite> visiteur)
         {
-            visitor.Entrer();
-            visitor.Visiter(this, () => Console.WriteLine($"Boite"));
+            visiteur.Entrer();
+            visiteur.Visiter(this, () => Console.WriteLine($"Boite"));
 
-            if (_Box is IVisitable<IBoite> visitable)
+            if (_Boite is IVisitable<IBoite> visitable)
             {
-                visitable.Accepter(visitor);
+                visitable.Accepter(visiteur);
             }
 
-            visitor.Sortir();
+            visiteur.Sortir();
         }
     }
 }

@@ -1,52 +1,52 @@
 ﻿using System.Collections;
 
-namespace Boxes
+namespace Boites
 {
     internal class MonoBoite : IBoite
     {
         public int Hauteur { get; set; }
         public int Largeur { get; set; }
-        public List<string> Lines { get; } = [];
+        public List<string> Lignes { get; } = [];
 
         protected MonoBoite(MonoBoite mb)
         {
             Hauteur = mb.Hauteur;
             Largeur = mb.Largeur;
-            Lines = new(mb.Lines);
+            Lignes = new(mb.Lignes);
         }
 
         public MonoBoite(string text = "")
         {
             if (string.IsNullOrEmpty(text))
             {
-                Lines.Add("");
-                Largeur = Lines.Max(line => line.Length);
-                Hauteur = Lines.Count;
+                Lignes.Add("");
+                Largeur = Lignes.Max(line => line.Length);
+                Hauteur = Lignes.Count;
             }
             else
             {
-                Lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-                Largeur = Lines.Max(line => line.Length);
-                Hauteur = Lines.Count;
+                Lignes = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+                Largeur = Lignes.Max(line => line.Length);
+                Hauteur = Lignes.Count;
             }
         }
 
-        public IEnumerator<string> GetEnumerator() => new MonoBoxEnum(Lines);
+        public IEnumerator<string> GetEnumerator() => new MonoBoxEnum(Lignes);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public IBoite Clone() => new MonoBoite(this);
 
-        public void Redimensionner(int width, int height)
+        public void Redimensionner(int largeur, int hauteur)
         {
-            Largeur = width; 
-            Hauteur = height;
+            Largeur = largeur; 
+            Hauteur = hauteur;
         }
-        public void Accepter(IVisiteur<IBoite> visitor)
+        public void Accepter(IVisiteur<IBoite> visiteur)
         {
-            visitor.Entrer();
-            visitor.Visiter(this, () => Console.WriteLine($"Mono {Hauteur} x {Largeur}"));
-            visitor.Sortir();
+            visiteur.Entrer();
+            visiteur.Visiter(this, () => Console.WriteLine($"Mono {Hauteur} x {Largeur}"));
+            visiteur.Sortir();
         }
         private class MonoBoxEnum : IEnumerator<string>
         {

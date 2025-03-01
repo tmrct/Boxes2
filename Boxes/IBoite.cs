@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Boxes
+namespace Boites
 {
     public interface IBoite : IEnumerable<string>, IVisitable<IBoite>
     {
         int Hauteur { get; set; }
         int Largeur { get; set; }
         IBoite Clone();
-        void Redimensionner(int width, int height);
+        void Redimensionner(int largeur, int hauteur);
     }
 }
