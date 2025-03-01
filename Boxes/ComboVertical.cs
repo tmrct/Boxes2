@@ -58,20 +58,12 @@ namespace Boites
             visiteur.Sortir();
         }
 
-        private class ComboVerticalEnumerator : IEnumerator<string>
+        private class ComboVerticalEnumerator(ComboVertical cv) : IEnumerator<string>
         {
-            private IEnumerator<string> EnumTop { get; set; }
-            private IEnumerator<string> EnumBottom { get; set; }
-            private Position _Position { get; set; }
-            private ComboVertical Cv { get; set; }
-
-            public ComboVerticalEnumerator(ComboVertical cv)
-            {
-                EnumTop = cv.BoiteHaut.GetEnumerator();
-                EnumBottom = cv.BoiteBas.GetEnumerator();
-                Cv = cv;
-                _Position = Position.Top;
-            }
+            private IEnumerator<string> EnumTop { get; set; } = cv.BoiteHaut.GetEnumerator();
+            private IEnumerator<string> EnumBottom { get; set; } = cv.BoiteBas.GetEnumerator();
+            private Position _Position { get; set; } = Position.Top;
+            private ComboVertical Cv { get; set; } = cv;
 
             public string Current 
             { 
@@ -80,6 +72,7 @@ namespace Boites
                     switch (_Position)
                     {
                         case Position.Top:
+
                             return EnumTop.Current.PadRight(Cv.Largeur, ' ');
                         case Position.Middle:
                             return new string('-', Cv.Largeur);
